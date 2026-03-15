@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 1
+names: ['Grade-Rod']
+
+roboflow:
+  workspace: health-care-lab-rquk6
+  project: grade-rod
+  version: 3
+  license: Public Domain
+  url: https://app.roboflow.com/health-care-lab-rquk6/grade-rod/3

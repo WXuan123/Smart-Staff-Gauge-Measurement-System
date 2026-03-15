@@ -1,0 +1,4 @@
+train: /wamp64/www/YOLOv8.2-Caliper/momo640/train # training dataset
+val: /wamp64/www/YOLOv8.2-Caliper/momo640/valid  # validation dataset
+nc: 1  # number of classes
+names: ['Grade-Rod']  # class names

@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>坤眾科技 - 智慧箱尺量測與記錄系統</title>
+    <link rel="stylesheet" href="./static/styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.6/lottie.min.js"></script>
+    <script>
+      function showLoadingAnimation() {
+        const loadingOverlay = document.getElementById('loading-overlay');
+        loadingOverlay.style.display = 'grid';
+      }
+
+      function hideLoadingAnimation() {
+        const loadingOverlay = document.getElementById('loading-overlay');
+        loadingOverlay.style.display = 'none';
+      }
+
+      window.onload = () => {
+        // alert("本系統目前仍處於測試階段，並非是最終版本。");
+
+        const form = document.querySelector('form');
+        form.addEventListener('submit', () => {
+          showLoadingAnimation();
+        });
+        
+        // Initialize Lottie animation
+        const animation = lottie.loadAnimation({
+          container: document.getElementById('loading-animation'), // the DOM element to render the animation
+          renderer: 'svg',
+          loop: true,
+          autoplay: true,
+          path: './static/recognize.json' // the path to the animation json
+        });
+
+        // 獲取並顯示經度、緯度和時間
+        const locationDiv = document.getElementById('location-info');
+        
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+
+            function updateTime() {
+              const currentTime = new Date().toLocaleString();
+              locationDiv.innerHTML = `經度: ${longitude.toFixed(6)} | 緯度: ${latitude.toFixed(6)} | 時間: ${currentTime}`;
+            }
+
+            updateTime(); // 初次調用顯示時間
+            setInterval(updateTime, 1000); // 每秒更新一次時間
+          });
+        } else {
+          locationDiv.innerHTML = "無法獲取位置資訊";
+        }
+      };
+
+
+      document.addEventListener('DOMContentLoaded', function() {
+        const imagesContainer = document.querySelector('.images');
+        if (imagesContainer) {
+          imagesContainer.addEventListener('wheel', function(event) {
+            if (event.deltaY !== 0) {
+              event.preventDefault(); // 防止頁面上下滾動
+              this.scrollLeft += event.deltaY; // 將滾輪的縱向滾動量轉換為橫向滾動
+            }
+          });
+        }
+      });
+
+    </script>
+  </head>
+  <body>
+    <div id="loading-overlay">
+      <div id="loading-animation"></div>
+      <p style="color: white;">處理中，請稍候</p>
+    </div>
+    
+    <section id="output-section">
+      {% if files %}
+        <div class="images">
+          {% for name, path in files.items() %}
+            <div class="image-container">
+              <img src="{{ url_for('download_file', filename=path) }}" alt="{{ name }}">
+              <h3>{{ name }}</h3>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </section>
+
+    <section id="input-section">
+      <h1>坤眾科技 - 智慧箱尺量測與記錄系統</h1>
+      <div id="location-info"></div> <!-- 顯示經度、緯度和時間的區域 -->
+      <form action="/" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" required>
+        <input type="submit" value="開始">
+      </form>
+    </section>
+  </body>
+</html>
